@@ -24,65 +24,68 @@ const kittyPrompts = {
     // Return an array of just the names of kitties who are orange e.g.
         // ['Tiger', 'Snickers']
 
-    const orangeCats = cats.filter((cat) => {
-      return cat.color === 'orange';
-    });
+    const orangeCatNames = cats.reduce((kitties, cat) => {
+      if(cat.color === 'orange') {
+        kitties.push(cat.name)
+      }
+      return kitties
+    }, []);
+    return orangeCatNames
 
-    const orangeCatNames = orangeCats.map((cat) => {
-      return cat.name;
-    });
+    // const orangeCats = cats.filter((cat) => {
+    //   return cat.color === 'orange';
+    // });
+
+    // const orangeCatNames = orangeCats.map((cat) => {
+    //   return cat.name;
+    // });
     
-    return orangeCatNames;
+    // return orangeCatNames;
 
+    // const orangeCatNames = [];
+    // cats.forEach((cat) => {
+    //   if(cat.color === 'orange') {
+    //     orangeCatNames.push(cat.name);
+    //   }
+    // });
+    // return orangeCatNames
     // Annotation:
     // need to filter through the array, to only get the cats that are orange
     // then need to use map, so I can return just the name
   },
 
-  sortByAge() {
+  sortByAge(cats) {
     // Sort the kitties by their age
 
-    /* CODE GOES HERE */
+    const catsByAge = cats.sort((a, b) => {
+      return b.age - a.age
+    });
+    return catsByAge;
 
     // Annotation:
-    // Write your annotation here as a comment
+    // feels like .sort will need to be used in order to put
+    // the array in order from oldest cat to youngest cat
   },
 
-  growUp() {
+  growUp(cats) {
     // Return an array of kitties who have all grown up by 2 years e.g.
-    // [{
-    //   name: 'Felicia',
-    //   age: 4,
-    //   color: 'grey'
-    // },
-    // {
-    //   name: 'Tiger',
-    //   age: 7,
-    //   color: 'orange'
-    // },
-    // ...etc]
 
-    /* CODE GOES HERE */
+    const olderCats = []
+    cats.forEach((cat) => {
+      cat.age += 2;
+      olderCats.push(cat);
+    });
+    
+    return olderCats
+
+    // Annotation:
+    // need to add 2 plus years (map?) to their age, then
+    // sort them by age again
+    // used forEach, as map only returned the age
+    // with forEach, we were able to get the cats age plus 2
+    // and push the entire object to a new array
   }
 };
-
-// PLEASE READ-----------------------
-// Currently, your functions are probably using the `kitties` global import variable.
-// refactor the above functions using arguments and parameters so that
-// they can perform the same utility
-// for the kitties or puppers datasets, depending on what arguments you send through.
-
-
-// ---------------------------------------------------------------------------
-// ---------------------------------------------------------------------------
-// ---------------------------------------------------------------------------
-// ---------------------------------------------------------------------------
-// ---------------------------------------------------------------------------
-
-
-
-
-
 
 // DATASET: clubs from ./datasets/clubs
 const clubPrompts = {
