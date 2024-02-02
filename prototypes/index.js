@@ -69,7 +69,7 @@ const kittyPrompts = {
 
   growUp(cats) {
     // Return an array of kitties who have all grown up by 2 years e.g.
-
+  
     const olderCats = []
     cats.forEach((cat) => {
       cat.age += 2;
@@ -133,29 +133,24 @@ const modPrompts = {
     //   { mod: 3, studentsPerInstructor: 10 },
     //   { mod: 4, studentsPerInstructor: 8 }
     // ]
-
-    /* CODE GOES HERE */
-
+    
+    const modsUpdated = mods.map((mod1) => {
+      studentsPer = mod1.students / mod1.instructors
+      newMods = {
+        mod: mod1.mod,
+        studentsPerInstructor: studentsPer
+      }
+      return newMods
+    })
+    return modsUpdated
     // Annotation:
-    // Write your annotation here as a comment
+    // not passing any arguments, so will not be using parameters
+    // keeping mod1, but want a new key value pair that divides the students
+    // by the instructor
+    // thinking I will need to use reduce
+    // ended up using map as it was returning an array of the same length
   }
 };
-
-
-
-
-
-
-// ---------------------------------------------------------------------------
-// ---------------------------------------------------------------------------
-// ---------------------------------------------------------------------------
-// ---------------------------------------------------------------------------
-// ---------------------------------------------------------------------------
-
-
-
-
-
 
 // DATASET: cakes from ./datasets/cakes
 const cakePrompts = {
@@ -168,10 +163,15 @@ const cakePrompts = {
     //    ..etc
     // ]
 
-    /* CODE GOES HERE */
+    let cakeAmount = cakes.map((cake) => {
+      return {flavor: cake.cakeFlavor, inStock: cake.inStock}
+    })
+    return cakeAmount
 
     // Annotation:
-    // Write your annotation here as a comment
+    // No argument being passed, so will not be using any parameters
+    // most likely use map as we are returning an array of the same length
+    // we just want flavor and instock
   },
 
   onlyInStock() {
@@ -195,20 +195,27 @@ const cakePrompts = {
     // ..etc
     // ]
 
-    /* CODE GOES HERE */
+    let hasStock = cakes.filter((cake) => {
+      return cake.inStock > 0
+    })
+    return hasStock
 
     // Annotation:
-    // Write your annotation here as a comment
+    // need to use filter to get all the cakes with > 0 inStock
   },
 
   totalInventory() {
     // Return the total amount of cakes in stock e.g.
     // 59
 
-    /* CODE GOES HERE */
+    const totalCakes =  cakes.reduce((total, cake) => {
+      total += cake.inStock
+      return total
+    }, 0)
+    return totalCakes
 
     // Annotation:
-    // Write your annotation here as a comment
+    // need to use reduce to add up the total amount of cakes in stock
   },
 
   allToppings() {
