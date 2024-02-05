@@ -223,10 +223,20 @@ const cakePrompts = {
     // every cake in the dataset e.g.
     // ['dutch process cocoa', 'toasted sugar', 'smoked sea salt', 'berries', ..etc]
 
-    /* CODE GOES HERE */
+    let ingredients = [];
+
+    cakes.forEach((cake) => {
+      cake.toppings.forEach((topping) => {
+        if(!ingredients.includes(topping)) {
+          ingredients.push(topping);
+        }
+      });
+    });
+    return ingredients;
 
     // Annotation:
-    // Write your annotation here as a comment
+    // seems like a for each would be the best way to go with this one
+    // if ingredients array already includes x item, don't push
   },
 
   groceryList() {
@@ -240,28 +250,27 @@ const cakePrompts = {
     //    ...etc
     // }
 
-    /* CODE GOES HERE */
+    let ingredients = [];
+
+    cakes.forEach((cake) => {
+      cake.toppings.forEach((topping) => {
+        ingredients.push(topping);
+      });
+    });
+    
+    let shoppingList = ingredients.reduce((list, item) => {
+      var numOfItem = ingredients.filter(ingredient => ingredient === item).length;
+      list[item] = numOfItem;
+      return list;
+    }, {});
+    return shoppingList;
 
     // Annotation:
-    // Write your annotation here as a comment
+    // reduce will need to be used here
+    // used a filter as within the reduce, in order to see if the ingredient word
+    // matched the item parameter passed through reduce and count the length
   }
 };
-
-
-
-
-
-
-// ---------------------------------------------------------------------------
-// ---------------------------------------------------------------------------
-// ---------------------------------------------------------------------------
-// ---------------------------------------------------------------------------
-// ---------------------------------------------------------------------------
-
-
-
-
-
 
 // DATASET: classrooms from ./datasets/classrooms
 const classPrompts = {
@@ -274,10 +283,13 @@ const classPrompts = {
     //   { roomLetter: 'G', program: 'FE', capacity: 29 }
     // ]
 
-    /* CODE GOES HERE */
-
+    const programFE = classrooms.filter((classroom) => {
+      return classroom.program === 'FE';
+    })
+    return programFE;
     // Annotation:
     // Write your annotation here as a comment
+    // filter to grab only the FE programs
   },
 
   totalCapacities() {
@@ -287,33 +299,55 @@ const classPrompts = {
     //   feCapacity: 110,
     //   beCapacity: 96
     // }
+      var feCap = 0;
+      var beCap = 0;
 
-    /* CODE GOES HERE */
+    const capacity = classrooms.reduce((totalCap, classroom) => {
+      if(classroom.program === 'FE') {
+        feCap += classroom.capacity;
+        totalCap[(classroom.program).toLowerCase() + 'Capacity'] = feCap;
+      } else if(classroom.program === 'BE') {
+        beCap += classroom.capacity;
+        totalCap[(classroom.program).toLowerCase() + 'Capacity'] = beCap;
+      }
 
+      return totalCap;
+    }, {});
+    
+    return capacity;
     // Annotation:
     // Write your annotation here as a comment
+    // will need to us reduce in order to create an object
+    // will most likely also need to use an if statement within the reduce
+    // to add up the totals
+    // had to add up the totals outside of the reduce, otherwise they
+    // were just getting re-assigned
   },
 
   sortByCapacity() {
     // Return the array of classrooms sorted by their capacity (least capacity to greatest)
 
-    /* CODE GOES HERE */
+    // const catsByAge = cats.sort((a, b) => {
+    //   return b.age - a.age
+    // });
+    // return catsByAge;
+
+    const classByCap = classrooms.sort((a, b) => {
+      return a.capacity - b.capacity;
+    })
+    return classByCap;
 
     // Annotation:
     // Write your annotation here as a comment
+    // need to use the sort method 
+    // 'a' goes first here since we are going from smallest number to largest
   }
 };
-
-// ---------------------------------------------------------------------------
-// ---------------------------------------------------------------------------
-// ---------------------------------------------------------------------------
-// ---------------------------------------------------------------------------
-// ---------------------------------------------------------------------------
 
 // DATASET: books from './datasets/books
 
 const bookPrompts = {
-  removeViolence() {
+  removeViolence(myBooks) {
     // Your function should access the books data through a parameter (it is being passed as an argument in the test file)
     // return an array of all book titles that are not horror or true crime. Eg:
 
@@ -324,13 +358,32 @@ const bookPrompts = {
     //   'Catch-22', 'Treasure Island']
 
 
-    /* CODE GOES HERE */
+    // let bookTitles = [];
 
+    // myBooks.forEach((book) => {
+    //   if(book.genre !== 'Horror' && book.genre !== 'True Crime') {
+    //     bookTitles.push(book.title)
+    //   }
+    // });
+  
+    // return bookTitles
+
+    let bookTitles1 = myBooks.filter((book) => {
+      return book.genre !== 'Horror' && book.genre !== 'True Crime';
+    });
+
+    let bookTitles2 = bookTitles1.map((book) => {
+      return book.title;
+    });
+
+    return bookTitles2;
     // Annotation:
-    // Write your annotation here as a comment
+    // use a forEach to iterate through the array
+    // use an if statement to push book titles to array if genre
+    // is not horror OR true crime
 
   },
-  getNewBooks() {
+  getNewBooks(myBooks) {
     // return an array of objects containing all books that were
     // published in the 90's and 00's. Inlucde the title and the year Eg:
 
@@ -338,10 +391,19 @@ const bookPrompts = {
     //  { title: 'Life of Pi', year: 2001 },
     //  { title: 'The Curious Incident of the Dog in the Night-Time', year: 2003 }]
 
-    /* CODE GOES HERE */
+    let newBooks = myBooks.filter((book) => {
+      return book.published > 1989;
+    });
 
+    let newBooks1 = newBooks.map((book) => {
+      return {title: book.title, year: book.published};
+    });
+
+    return newBooks1;
     // Annotation:
-    // Write your annotation here as a comment
+    // use filter and then map
+    // on the map, make sure to return it as an object if you need more than
+    // one key-value pair
   },
 
   getBooksByYear(books, year) {
@@ -354,10 +416,19 @@ const bookPrompts = {
     //  { title: 'Life of Pi', year: 2001 },
     //  { title: 'The Curious Incident of the Dog in the Night-Time', year: 2003 }]
 
-    /* CODE GOES HERE */
+    let newBooks = books.filter((book) => {
+      return book.published > year;
+    });
+
+    let newBooks1 = newBooks.map((book) => {
+      return {title: book.title, year: book.published};
+    });
+
+    return newBooks1;
 
     // Annotation:
-    // Write your annotation here as a comment
+    // this should follow the same as the prompt above
+    // but using the year parameter instead of the actual year inputted above
   }
 
 };
