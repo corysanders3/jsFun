@@ -89,7 +89,7 @@ const kittyPrompts = {
 
 // DATASET: clubs from ./datasets/clubs
 const clubPrompts = {
-  membersBelongingToClubs() {
+  membersBelongingToClubs(clubs) {
     // Your function should access the clubs data through a parameter (it is being passed as an argument in the test file)
     // Create an object whose keys are the names of people, and whose values are
     // arrays that include the names of the clubs that person is a part of. e.g.
@@ -98,11 +98,24 @@ const clubPrompts = {
     //   Pam: ['Drama', 'Art', 'Chess'],
     //   ...etc
     // }
+    const newClubs = clubs.reduce((newO, club) => {
+      club.members.forEach((member) => {
+        newO[member] = []
+        })
+      return newO
+    }, {})
 
-    /* CODE GOES HERE */
-
+    clubs.forEach((club) => {
+      club.members.forEach((member) => {
+        if(club.members.includes(member)) {
+          newClubs[member].push(club.club)
+        }
+      })
+    })
+    return newClubs
     // Annotation:
-    // Write your annotation here as a comment
+    // had to use a reduce and forEach just to get my object of arrays setup
+    // then iterated through each to push the club to the corresponding array
   }
 };
 
@@ -433,13 +446,6 @@ const bookPrompts = {
 
 };
 
-
-// ---------------------------------------------------------------------------
-// ---------------------------------------------------------------------------
-// ---------------------------------------------------------------------------
-// ---------------------------------------------------------------------------
-// ---------------------------------------------------------------------------
-
 // DATASET: weather from './datasets/weather
 
 const weatherPrompts = {
@@ -447,10 +453,13 @@ const weatherPrompts = {
     // return an array of all the average temperatures. Eg:
     // [ 40, 40, 44.5, 43.5, 57, 35, 65.5, 62, 14, 46.5 ]
 
-    /* CODE GOES HERE */
-
+    let averageTemps = weather.map((w) => {
+      return ((w.temperature.high + w.temperature.low) / 2);
+    })
+    return averageTemps;
     // Annotation:
-    // Write your annotation here as a comment
+    // map to iterate through the array and return the same amount of elements
+    // perform some logic within the map to return the average temp
   },
 
   findSunnySpots() {
@@ -460,10 +469,18 @@ const weatherPrompts = {
     // 'New Orleans, Louisiana is sunny.',
     // 'Raleigh, North Carolina is mostly sunny.' ]
 
-    /* CODE GOES HERE */
-
+    let sunny = weather.filter((w) => {
+      return w.type === 'mostly sunny' || w.type === 'sunny';
+    });
+    let sunnyStatement = sunny.map((sun) => {
+      return `${sun.location} is ${sun.type}.`
+    })
+    return sunnyStatement
     // Annotation:
-    // Write your annotation here as a comment
+    // use filter to iterate through the array and find all weather
+    // types of sunny or mostly sunny
+    // return a string with interpolation
+    // had to map through after the filter, to return the interpolation requested
   },
 
   findHighestHumidity() {
@@ -475,20 +492,17 @@ const weatherPrompts = {
     //   temperature: { high: 49, low: 38 }
     // }
 
-    /* CODE GOES HERE */
-
+    let highestHumidity = weather.sort((a, b) => {
+      return b.humidity - a.humidity
+    })
+    return highestHumidity[0]
     // Annotation:
-    // Write your annotation here as a comment
+    // use find to location the highest humidity
+    // ended up using sort to put the highest humidity at the top
+    // and then returning the first index position
 
   }
 };
-
-// ---------------------------------------------------------------------------
-// ---------------------------------------------------------------------------
-// ---------------------------------------------------------------------------
-// ---------------------------------------------------------------------------
-// ---------------------------------------------------------------------------
-
 
 // DATASET: nationalParks from ./datasets/nationalParks
 
@@ -501,10 +515,25 @@ const nationalParksPrompts = {
     //   parksVisited: ["Rocky Mountain", "Acadia", "Zion"]
     //}
 
-    /* CODE GOES HERE */
+    let parks = {
+        parksToVisit: [],
+        parksVisited: []
+    }
+    
+    nationalParks.forEach((park) => {
+      if(park.visited) {
+        parks.parksVisited.push(park.name);
+      } else if(!park.visited) {
+        parks.parksToVisit.push(park.name);
+      }
+    });
+    return parks;
 
     // Annotation:
-    // Write your annotation here as a comment
+    // will use reduce to separate out the arrays based on if the park
+    // was visited or not
+    // ended up setting up a variable and using forEach to push the park
+    // names into the corresponding array
   },
 
   getParkInEachState() {
@@ -565,10 +594,14 @@ const breweryPrompts = {
     // Return the total beer count of all beers for every brewery e.g.
     // 40
 
-    /* CODE GOES HERE */
-
+    let totalBeers = breweries.reduce((total, brewery) => {
+      total += brewery.beers.length
+      return total
+    }, 0)
+    return totalBeers
     // Annotation:
-    // Write your annotation here as a comment
+    // we want to return 40
+    // i think we will need to utilize reduce to accomplish this
   },
 
   getBreweryBeerCount() {
@@ -580,10 +613,16 @@ const breweryPrompts = {
     // ...etc.
     // ]
 
-    /* CODE GOES HERE */
-
+    let breweryShort = breweries.map((brewery) => {
+      return {
+        name: brewery.name,
+        beerCount: brewery.beers.length
+      }
+    })
+    return breweryShort
     // Annotation:
-    // Write your annotation here as a comment
+    // return array of objects that includes beer name and beer count
+    // try using filter
   },
 
   getSingleBreweryBeerCount(breweryName) {
@@ -592,21 +631,51 @@ const breweryPrompts = {
     // given 'Ratio Beerworks', return 5
 
 
-    /* CODE GOES HERE */
+    let foundBrewery = breweries.find((brewery) => {
+      return breweryName === brewery.name
+    })
 
+    let amountOfBeer = foundBrewery.beers.length
+    return amountOfBeer
     // Annotation:
-    // Write your annotation here as a comment
+    // return a number based on the string that is passed through
+    // find first and then .length
   },
 
   findHighestAbvBeer() {
     // Return the beer which has the highest ABV of all beers
     // e.g.
     // { name: 'Barrel Aged Nature\'s Sweater', type: 'Barley Wine', abv: 10.9, ibu: 40 }
+    
+    let sortedBeer = [];
 
-    /* CODE GOES HERE */
+    breweries.forEach((brewery) => {
+      brewery.beers.forEach((beer) => {
+        sortedBeer.push(beer.abv)
+      })
+    })
+    let sortedBeer1 = sortedBeer.sort((a, b) => {
+      return b - a
+    })
 
+    let thisBeer;
+    breweries.forEach((brewery) => {
+      const foundBeer = brewery.beers.find((beer) => {
+        return beer.abv === sortedBeer1[0]
+      })
+      if(foundBeer) {
+        thisBeer = foundBeer
+      }
+
+    })
+    return thisBeer
     // Annotation:
-    // Write your annotation here as a comment
+    // return the highest number within the key of abv
+    // had to get all my abvs into their own array
+    // from there, I could sort them from highest to lowest
+    // I iterated through each brewery and beers to see which one matched
+    // my first position in my sorted array
+    // if it found it, I would reassign my variable outside of the forEach
   }
 };
 
