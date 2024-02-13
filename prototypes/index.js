@@ -119,22 +119,6 @@ const clubPrompts = {
   }
 };
 
-
-
-
-
-
-// ---------------------------------------------------------------------------
-// ---------------------------------------------------------------------------
-// ---------------------------------------------------------------------------
-// ---------------------------------------------------------------------------
-// ---------------------------------------------------------------------------
-
-
-
-
-
-
 // DATASET: mods from ./datasets/mods
 const modPrompts = {
   studentsPerMod() {
@@ -546,10 +530,14 @@ const nationalParksPrompts = {
     // { Florida: 'Everglades' } ]
 
 
-    /* CODE GOES HERE */
+    const stateParks = nationalParks.reduce((states, park) => {
+      states.push({[park.location]: park.name})
+      return states
+    }, [])
 
+    return stateParks
     // Annotation:
-    // Write your annotation here as a comment
+    // use reduce to return an array, and create the object using bracket notation
   },
 
   getParkActivities() {
@@ -568,25 +556,20 @@ const nationalParksPrompts = {
     //   'backpacking',
     //   'rock climbing' ]
 
-    /* CODE GOES HERE */
+    let activities = [];
 
+    nationalParks.forEach((park) => {
+      park.activities.forEach((act) => {
+        if(!activities.includes(act))
+        activities.push(act)
+      })
+    })
+    return activities
     // Annotation:
-    // Write your annotation here as a comment
+    // use forEach and push each activity to an activities array
+    // then make sure we aren't pushing duplicates using .some
   }
 };
-
-
-
-// ---------------------------------------------------------------------------
-// ---------------------------------------------------------------------------
-// ---------------------------------------------------------------------------
-// ---------------------------------------------------------------------------
-// ---------------------------------------------------------------------------
-
-
-
-
-
 
 // DATASET: breweries from ./datasets/breweries
 const breweryPrompts = {
@@ -679,13 +662,6 @@ const breweryPrompts = {
   }
 };
 
-
-// ---------------------------------------------------------------------------
-// ---------------------------------------------------------------------------
-// ---------------------------------------------------------------------------
-// ---------------------------------------------------------------------------
-// ---------------------------------------------------------------------------
-
 // DATASET: weather from './datasets/boardGames
 
 const boardGamePrompts = {
@@ -694,10 +670,14 @@ const boardGamePrompts = {
     // e.g. given an argument of "strategy", return
     // ["Chess", "Catan", "Checkers", "Pandemic", "Battle Ship", "Azul", "Ticket to Ride"]
 
-    /* CODE GOES HERE */
+    const gameNames = boardGames[type].map((game) => {
+      return game.name;
+    })
+    return gameNames;
 
     // Annotation:
-    // Write your annotation here as a comment
+    // use map to return the name of the games, based on the property
+    // key being passed as an argument
   },
 
   listGamesAlphabetically(type) {
@@ -706,10 +686,14 @@ const boardGamePrompts = {
     // e.g. given an argument of "childrens", return
     // ["Candy Land", "Connect Four", "Operation", "Trouble"]
 
-    /* CODE GOES HERE */
+    const gameNames = boardGames[type].map((game) => {
+      return game.name;
+    })
+    return gameNames.sort();
 
     // Annotation:
-    // Write your annotation here as a comment
+    // use map to return the name of the games, based on the property
+    // key being passed as an argument, like above, and then sort it
   },
 
   findHighestRatedGamesByType(type) {
@@ -717,10 +701,14 @@ const boardGamePrompts = {
     // e.g. given the argument of 'party', return
     // { name: 'Codenames', rating: 7.4, maxPlayers: 8 },
 
-    /* CODE GOES HERE */
+    const highestRated = boardGames[type].sort((a, b) => {
+      return b.rating - a.rating;
+    })
+    return highestRated[0];
 
     // Annotation:
-    // Write your annotation here as a comment
+    // use the argument to access the specific array, then
+    // sort to put the highest rated game at the top index position
   },
 
   averageScoreByType(type) {
@@ -728,10 +716,18 @@ const boardGamePrompts = {
     // e.g. given the argument of "strategy", return 7
     // note: do not worry about rounding your result.
 
-    /* CODE GOES HERE */
+    const totalRating = boardGames[type].reduce((total, game) => {
+      total += game.rating;
+      return total;
+    }, 0)
+    
+    const avgRating = totalRating / boardGames[type].length;
+    return avgRating;
 
     // Annotation:
-    // Write your annotation here as a comment
+    // use the argument to access the specific array
+    // and use reduce to add up the total and then divide the total
+    // by the type.length
   },
 
   averageScoreByTypeAndPlayers(type, maximumPlayers) {
@@ -740,42 +736,22 @@ const boardGamePrompts = {
     // e.g. given the arguments of "strategy" and 2, return 6.16666666667
     // note: do not worry about rounding your result.
 
-    /* CODE GOES HERE */
+    const gamesByType = boardGames[type].filter((game) => {
+      return game.maxPlayers === maximumPlayers
+    })
+    
+    let total = 0;
+    gamesByType.forEach((game) => {
+      total += game.rating;
+    })
+    return total / gamesByType.length
 
     // Annotation:
-    // Write your annotation here as a comment
+    // use a filter to first get the games that match the game type
+    // and game maxPlayers, then follow the same method above to get
+    // the average (this time we will solve it with a forEach)
   }
 };
-
-
-
-
-
-
-// ---------------------------------------------------------------------------
-// ---------------------------------------------------------------------------
-// ---------------------------------------------------------------------------
-// ---------------------------------------------------------------------------
-// ---------------------------------------------------------------------------
-
-
-
-
-
-
-// ---------------------------------------------------------------------------
-// ---------------------------------------------------------------------------
-// ---------------------------------------------------------------------------
-// ---------------------------------------------------------------------------
-// ---------------------------------------------------------------------------
-
-
-
-
-
-
-// DOUBLE DATASETS
-// =================================================================
 
 // DATASET: instructors, cohorts from ./datasets/turing
 const turingPrompts = {
@@ -787,10 +763,19 @@ const turingPrompts = {
     //  { name: 'Robbie', studentCount: 18 }
     // ]
 
-    /* CODE GOES HERE */
+    let instructorList = instructors.reduce((studentCount, instructor) => {
+      cohorts.forEach((cohort) => {
+        if(instructor.module === cohort.module) {
+          studentCount.push({name: instructor.name, studentCount: cohort.studentCount})
+        }
+      })
+      return studentCount
+    }, [])
+    return instructorList
 
     // Annotation:
-    // Write your annotation here as a comment
+    // if instructor module matches cohort module, return an object
+    // with module cohort student count
   },
 
   studentsPerInstructor() {
@@ -800,10 +785,19 @@ const turingPrompts = {
     // cohort1804: 10.5
     // }
 
-    /* CODE GOES HERE */
+    let studentsPerTeacher = cohorts.reduce((avgStudents, school) => {
+      let teacherLength = instructors.filter((instructor) => {
+        return instructor.module === school.module
+      })
+      let avg = school.studentCount / teacherLength.length
+      avgStudents['cohort' + school.cohort] = avg
+      return avgStudents
+    }, {})
+    return studentsPerTeacher
 
     // Annotation:
-    // Write your annotation here as a comment
+    // seeing how many students are in each mod, seeing how many instructors
+    // are teaching each mod, dividing students by teacher count
   },
 
   modulesPerTeacher() {
@@ -821,10 +815,33 @@ const turingPrompts = {
     //     Will: [1, 2, 3, 4]
     //   }
 
-    /* CODE GOES HERE */
+    let teachersObject = instructors.reduce((teachers, instructor) => {
+      teachers[instructor.name] = []
+      return teachers
+    }, {})
+
+    instructors.forEach((instructor) => {
+      instructor.teaches.forEach((teach) => {
+        cohorts.forEach((cohort) => {
+          cohort.curriculum.forEach((curr) => {
+            if(teach.includes(curr) && !teachersObject[instructor.name].includes(cohort.module)) {
+              teachersObject[instructor.name].push(cohort.module)
+            }
+          })
+        })
+      })
+    })
+    let teacherKeys = Object.keys(teachersObject)
+    teacherKeys.forEach((teacher) => {
+      teachersObject[teacher].sort()
+    })
+    return teachersObject
 
     // Annotation:
-    // Write your annotation here as a comment
+    // need to return a list of modules that the teacher can teach,
+    // based on what the teacher teaches and what the module curriculum includes
+    // might want to setup the object first, and then push the module number
+    // to that teachers array
   },
 
   curriculumPerTeacher() {
