@@ -854,28 +854,33 @@ const turingPrompts = {
     //   recursion: [ 'Pam', 'Leta' ]
     // }
 
-    /* CODE GOES HERE */
+    let curriculumPer = cohorts.reduce((object, cohort) => {
+      cohort.curriculum.forEach((curr) => {
+        object[curr] = []
+      })
+      return object
+    }, {})
+    let topics = Object.keys(curriculumPer)
 
+    instructors.forEach((instructor) => {
+      instructor.teaches.forEach((course) => {
+        topics.forEach((topic) => {
+          if(course === topic) {
+            curriculumPer[topic].push(instructor.name)
+          }
+        })
+      })
+    })
+return curriculumPer
     // Annotation:
-    // Write your annotation here as a comment
+    // need to setup each object key first with a reduce
+    // using a reduce
+    // once I get the object setup, I can push into their arrays
+    // had to run 3 forEachs in order to iterate through instructors,
+    // instructor.teaches and the topics array, but was able to push
+    // the instructor names to the corresponding curriculum key-value
   }
 };
-
-
-
-
-
-
-// ---------------------------------------------------------------------------
-// ---------------------------------------------------------------------------
-// ---------------------------------------------------------------------------
-// ---------------------------------------------------------------------------
-// ---------------------------------------------------------------------------
-
-
-
-
-
 
 // DATASET: bosses, sidekicks from ./datasets/bosses
 const bossPrompts = {
@@ -887,29 +892,28 @@ const bossPrompts = {
     //   { bossName: 'Ursula', sidekickLoyalty: 20 },
     //   { bossName: 'Scar', sidekickLoyalty: 16 }
     // ]
+    let villains = Object.keys(bosses)
 
-    /* CODE GOES HERE */
+    let bossLoyalty = villains.reduce((allBosses, villain) => {
+      allBosses.push({ bossName: bosses[villain].name, sidekickLoyalty: 0 })
+      return allBosses
+    }, [])
+    
+    sidekicks.forEach((side) => {
+      bossLoyalty.forEach((boss) => {
+        if(boss.bossName === side.boss) {
+          boss.sidekickLoyalty += side.loyaltyToBoss
+        }
+      })
+    })
 
+    return bossLoyalty
     // Annotation:
-    // Write your annotation here as a comment
+    // need to setup my object first, by pushing the object into the array
+    // using a reduce that starts as an empty array
+    // then I can add the total to each object loyalty
   }
 };
-
-
-
-
-
-
-// ---------------------------------------------------------------------------
-// ---------------------------------------------------------------------------
-// ---------------------------------------------------------------------------
-// ---------------------------------------------------------------------------
-// ---------------------------------------------------------------------------
-
-
-
-
-
 
 // DATASET: constellations, stars } from ./datasets/astronomy
 const astronomyPrompts = {
